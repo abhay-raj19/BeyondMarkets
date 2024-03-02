@@ -1,14 +1,16 @@
-import { Request,Response } from "express";
+import { NextFunction, Request,Response } from "express";
 import { PrismaClient } from '@prisma/client'
 import {hashSync,compareSync} from 'bcrypt';
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../secrets";
+import { BadRequestsException } from "../exceptions/bad-requests";
+import { ErrorCode } from "../exceptions/root";
 
-
+ 
 
 const prisma = new PrismaClient()
 
-export const signup = async(req:Request,res:Response)=>{
+export const signup = async(req:Request,res:Response,next:NextFunction)=>{
     try {
         const {name,email,password} = req.body;
         const user = await prisma.user.findUnique({
@@ -17,9 +19,10 @@ export const signup = async(req:Request,res:Response)=>{
             },
         })
         if(user){
-            res.status(409).json({
-                message:"User exists,Try Login!"
-            })
+            // res.status(409).json({
+            //     message:"User exists,Try Login!"
+            // })
+            next(new BadRequestsException('User exists,Try Login!',ErrorCode.USER_ALREADY_EXISTS))
         }else{
             const newUser =await prisma.user.create({
                     data:{
@@ -38,6 +41,7 @@ export const signup = async(req:Request,res:Response)=>{
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
 
 export const login = async(req:Request,res:Response)=>{
     try {
