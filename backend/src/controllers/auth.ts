@@ -1,14 +1,11 @@
 import { NextFunction, Request,Response } from "express";
-import { PrismaClient } from '@prisma/client'
 import {hashSync,compareSync} from 'bcrypt';
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../secrets";
 import { BadRequestsException } from "../exceptions/bad-requests";
 import { ErrorCode } from "../exceptions/root";
+import { prisma } from "..";
 
- 
-
-const prisma = new PrismaClient()
 
 export const signup = async(req:Request,res:Response,next:NextFunction)=>{
     try {

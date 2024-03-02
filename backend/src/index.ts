@@ -2,6 +2,11 @@ import express, {Express,Request, Response, query} from 'express';
 import { PORT } from './secrets';
 import rootRouter from './routes';
 import { errorMiddleware } from './middlewares/error';
+import { PrismaClient } from '@prisma/client'
+
+ 
+
+export const prisma = new PrismaClient()
 
 const app:Express = express();
 app.use(express.json())
