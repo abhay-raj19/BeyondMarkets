@@ -1,6 +1,9 @@
 import { Request,Response } from "express";
 import { PrismaClient } from '@prisma/client'
-import {hashSync} from 'bcrypt';
+import {hashSync,compareSync} from 'bcrypt';
+import * as jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../secrets";
+
 
 
 const prisma = new PrismaClient()
@@ -33,5 +36,37 @@ export const signup = async(req:Request,res:Response)=>{
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+export const login = async(req:Request,res:Response)=>{
+    try {
+        const {email,password} = req.body;
+        const user = await prisma.user.findUnique({
+            where:{
+                email:email,
+            },
+        })
+        if(!user){
+            res.status(404).json({
+                error: "User not found. Please check your credentials.",
+            })
+            throw Error('User Does Not Exist!')
+        
+        }
+        if(!compareSync(password,user.password)){
+            res.status(401).json({
+                error:"Opps! Incorrect Password"
+            })
+        }
+        const token = jwt.sign({userId:user.id},JWT_SECRET);
+        res.json({
+            message:"User Login Successfully!",
+            userInfo:user,
+            token:token,
+        })
+
+    } catch (error) {
+        console.error(error);
     }
 }
