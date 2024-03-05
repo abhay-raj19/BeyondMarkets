@@ -5,10 +5,13 @@ import { JWT_SECRET } from "../secrets";
 import { BadRequestsException } from "../exceptions/bad-requests";
 import { ErrorCode } from "../exceptions/root";
 import { prisma } from "..";
+import { UnprocessableEntity } from "../exceptions/validation";
+import { signupSchema } from "../schema/user";
 
 
 export const signup = async(req:Request,res:Response,next:NextFunction)=>{
     try {
+        signupSchema.parse(req.body);
         const {name,email,password} = req.body;
         const user = await prisma.user.findUnique({
             where:{
@@ -33,9 +36,10 @@ export const signup = async(req:Request,res:Response,next:NextFunction)=>{
                 message:"New User Created Successfully!"
             });
             }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+    } catch (err:any) {
+        console.error(err);
+        // res.status(500).json({ error: "Internal Server Error" });
+        next(new UnprocessableEntity(err?.issues,"Unprocessable Entity",ErrorCode.UNPROCESSABLE_ENTITY))
     }
 }
 
