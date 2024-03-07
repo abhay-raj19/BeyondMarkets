@@ -3,10 +3,13 @@ import { PORT } from './secrets';
 import rootRouter from './routes';
 import { errorMiddleware } from './middlewares/error';
 import { PrismaClient } from '@prisma/client'
+import { signupSchema } from './schema/user';
 
  
 
-export const prisma = new PrismaClient()
+export const prisma = new PrismaClient({
+    log:['query']
+})
 
 const app:Express = express();
 app.use(express.json())
