@@ -10,8 +10,7 @@ import { signupSchema } from "../schema/user";
 
 
 export const signup = async(req:Request,res:Response,next:NextFunction)=>{
-    try {
-        signupSchema.parse(req.body);
+    signupSchema.parse(req.body);
         const {name,email,password} = req.body;
         const user = await prisma.user.findUnique({
             where:{
@@ -34,12 +33,7 @@ export const signup = async(req:Request,res:Response,next:NextFunction)=>{
             // console.log(newUser);
             res.json({
                 message:"New User Created Successfully!"
-            });
-            }
-    } catch (err:any) {
-        console.error(err);
-        // res.status(500).json({ error: "Internal Server Error" });
-        next(new UnprocessableEntity(err?.issues,"Unprocessable Entity",ErrorCode.UNPROCESSABLE_ENTITY))
+            })
     }
 }
 
