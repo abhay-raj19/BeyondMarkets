@@ -5,7 +5,7 @@ import { JWT_SECRET } from "../secrets";
 import { BadRequestsException } from "../exceptions/bad-requests";
 import { ErrorCode } from "../exceptions/root";
 import { prisma } from "..";
-import { UnprocessableEntity } from "../exceptions/validation";
+
 import { signupSchema } from "../schema/user";
 import { NotFoundException } from "../exceptions/not-found";
 
@@ -68,4 +68,9 @@ export const login = async(req:Request,res:Response,next:NextFunction)=>{
         token:token,
     })
     
+}
+
+
+export const me = async(req:Request,res:Response,next:NextFunction)=>{
+    res.json(req.user);
 }
